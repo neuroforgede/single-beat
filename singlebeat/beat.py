@@ -10,7 +10,7 @@ import signal
 import tornado.ioloop
 import tornado.process
 import subprocess
-from tornadis import PubSubClient
+import aioredis
 from tornado import gen
 
 
@@ -83,8 +83,8 @@ class Config(object):
         conn = self.get_redis().connection_pool\
             .get_connection('ping')
         host, port, password = conn.host, conn.port, conn.password
-        client = PubSubClient(host=host, port=port, password=password, autoconnect=True)
-        return client
+        r = aioredis.Redis(host=host, port=port, password=password)
+        return r.pubsub()
 
     def get_host_identifier(self):
         """\
